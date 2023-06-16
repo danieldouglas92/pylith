@@ -59,7 +59,7 @@ class SolnDispPresTracStrainLagrange(PetscComponent):
         components() to insure order is [displacement, pressure, trace_strain].
 
         """
-        return [self.displacement, self.pressure, self.traceStrain]
+        return [self.displacement, self.pressure, self.traceStrain, self.lagrangeFault]
 
 
 class Solution(SolutionBase):
