@@ -1,0 +1,79 @@
+# -*- Python -*- (syntax highlighting)
+# ----------------------------------------------------------------------
+#
+# Brad T. Aagaard, U.S. Geological Survey
+# Charles A. Williams, GNS Science
+# Matthew G. Knepley, University at Buffalo
+#
+# This code was developed as part of the Computational Infrastructure
+# for Geodynamics (http://geodynamics.org).
+#
+# Copyright (c) 2010-2022 University of California, Davis
+#
+# See LICENSE.md for license information.
+#
+# ----------------------------------------------------------------------
+#
+# CUBIT journal file for creating blocks and nodesets associated with
+# materials and boundary conditions.
+#
+# NOTE: We remove the overlap between groups associated with 
+# Dirichlet BC and groups associated with faults because PyLith
+# does not allow Dirichlet BC to be applied to nodes adjacent to the fault.
+#
+# ----------------------------------------------------------------------
+# Create blocks for materials
+# ----------------------------------------------------------------------
+block 1 surface trapezoid
+block 1 name "trapezoid"
+
+block 2 surface left_concrust
+block 2 name "left_concrust"
+
+block 3 surface right_concrust
+block 3 name "right_concrust"
+
+block 4 surface mantle
+block 4 name "mantle"
+
+
+# ----------------------------------------------------------------------
+# Create nodeset for topography/bathymetry
+# ----------------------------------------------------------------------
+group "bndry_top" add node in curve c_top
+group "bndry_top" add node in curve c_top@A
+group "bndry_top" add node in curve c_top@B
+nodeset 10 group bndry_top
+nodeset 10 name "bndry_top"
+
+# ----------------------------------------------------------------------
+# Create nodesets for west boundary
+# ----------------------------------------------------------------------
+group "bndry_left" add node in curve c_left
+group "bndry_left" add node in curve c_left@A
+nodeset 11 group bndry_left
+nodeset 11 name "bndry_left"
+
+# ----------------------------------------------------------------------
+# Create nodeset for east boundary
+# ----------------------------------------------------------------------
+# Crust
+group "bndry_right" add node in curve c_right
+group "bndry_right" add node in curve c_right@A
+nodeset 12 group bndry_right
+nodeset 12 name "bndry_right"
+
+# ----------------------------------------------------------------------
+# Create nodesets for bottom boundary
+# ----------------------------------------------------------------------
+group "bndry_bot" add node in curve c_bot
+nodeset 14 group bndry_bot
+nodeset 14 name "bndry_bot"
+
+
+# End of file
+
+
+
+
+
