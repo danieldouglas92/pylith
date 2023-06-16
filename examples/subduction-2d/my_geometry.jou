@@ -1,0 +1,153 @@
+# -*- Python -*- (syntax highlighting)
+# ----------------------------------------------------------------------
+#
+# Brad T. Aagaard, U.S. Geological Survey
+# Charles A. Williams, GNS Science
+# Matthew G. Knepley, University at Buffalo
+#
+# This code was developed as part of the Computational Infrastructure
+# for Geodynamics (http://geodynamics.org).
+#
+# Copyright (c) 2010-2022 University of California, Davis
+#
+# See LICENSE.md for license information.
+#
+# ----------------------------------------------------------------------
+#
+# CUBIT journal file with geometry for 2-D subduction zone example
+# based on the 2011 M9.0 Tohoku earthquake.
+#
+# We use the CUBIT support for APREPRO (the expressions in braces),
+# which includes units and mathematical functions. See the APREPRO
+# section in the appendix of the CUBIT documentation for more
+# information.
+#
+# The steps in constructing the geometry are:
+# (1) Create points
+# (2) Connect the points into spline curves
+# (3) Split the splines at intersections to form bounding curves
+# (4) Form surfaces from the bounding curves
+#
+# Points have been projected from longitude/latitude into a local
+# transverse Mercator projection. PyLith uses the Proj.4 library
+# for geographic projections. The proj parameters are:
+#
+#   +proj=tmerc +datum=WGS84 +lon_0=142.0 +lat_0=38.0 +k=0.9996
+#
+# so that the local origin is at a longitude of 142.0 degrees (WGS84)
+# and a latitude of 38.0 degrees (WGS84).
+#
+# ----------------------------------------------------------------------
+# Set units to SI.
+# ----------------------------------------------------------------------
+${Units('si')}
+#
+# ----------------------------------------------------------------------
+# Reset geometry.
+# ----------------------------------------------------------------------
+reset
+
+# Make sure undo is off to prevent errors in stitching volumes.
+undo off
+
+# ----------------------------------------------------------------------
+# Create points and curves defining materials
+# ----------------------------------------------------------------------
+
+# Topography/bathymetry (points from Google Earth)
+#
+# Save ids of important points in APREPRO variables as they are created
+# for use in other commands. We save the entity id in a variable rather
+# than name the vertex because this allows us to still use "idA to idB"
+# to select multiple vertices.
+
+create vertex x {-400.0*km} y {0.0*km}
+${p_topleft=Id("vertex")}
+create vertex x {400.0*km} y {0.0*km}
+${p_topright=Id("vertex")}
+create vertex x {-400.0*km} y {-400.0*km}
+${p_botleft=Id("vertex")}
+create vertex x {400.0*km} y {-400.0*km}
+${p_botright=Id("vertex")}
+
+create vertex x {-400.0*km} y {-25.0*km}
+${p_concrust_left=Id("vertex")}
+create vertex x {400.0*km} y {-25.0*km}
+${p_concrust_right=Id("vertex")}
+
+create curve spline vertex {p_concrust_left} {p_concrust_right}
+curve {Id("curve")} name "c_concrust_moho"
+
+create curve spline vertex {p_topright} {p_topleft}
+curve {Id("curve")} name "c_top"
+
+create curve spline vertex {p_topleft} {p_botleft}
+curve {Id("curve")} name "c_left"
+
+create curve spline vertex {p_botleft} {p_botright}
+curve {Id("curve")} name "c_bot"
+
+create curve spline vertex {p_botright} {p_topright}
+curve {Id("curve")} name "c_right"
+
+
+# Upside Down Trapezoid at the top boundary
+create vertex x { -200.0*km} y {0.0*km}
+${p_topleft_trap=Id("vertex")}
+create vertex x { -100.0*km} y {-100.00*km}
+${p_botleft_trap=Id("vertex")}
+create vertex x { 100.0*km} y {-100.00*km}
+${p_botright_trap=Id("vertex")}
+create vertex x { 200.0*km} y {0.0*km}
+${p_topright_trap=Id("vertex")}
+
+create curve spline vertex {p_topright_trap} {p_botright_trap} 
+curve {Id("curve")} name "c_trapright"
+
+create curve spline vertex {p_botright_trap} {p_botleft_trap} 
+curve {Id("curve")} name "c_trapbot"
+
+create curve spline vertex {p_botleft_trap} {p_topleft_trap} 
+curve {Id("curve")} name "c_trapleft"
+
+# ----------------------------------------------------------------------
+split curve c_top crossing curve c_trapleft
+split curve c_top crossing curve c_trapright
+split curve c_left crossing curve c_concrust_moho
+split curve c_right crossing curve c_concrust_moho
+
+split curve c_concrust_moho crossing curve c_trapleft
+split curve c_concrust_moho@A crossing curve c_trapright
+split curve c_trapleft crossing curve c_concrust_moho@A
+split curve c_trapright crossing curve c_concrust_moho@A
+# ----------------------------------------------------------------------
+# Create surfaces using bounding curves
+# ----------------------------------------------------------------------
+# Trapezoid
+create surface curve c_top@B c_trapright@A c_trapright c_trapbot c_trapleft c_trapleft@A
+surface {Id("surface")} name "trapezoid"
+
+create surface curve c_left c_concrust_moho c_trapleft@A c_top@A
+surface {Id("surface)} name "left_concrust"
+
+create surface curve c_right@A c_concrust_moho@B c_trapright c_top
+surface {Id("surface)} name "right_concrust"
+
+# mantle
+create surface curve c_trapleft c_trapbot c_trapright@A c_concrust_moho@B c_right c_bot c_left@A c_concrust_moho
+surface {Id("surface")} name "mantle"
+
+delete curve c_concrust_moho@A
+# ----------------------------------------------------------------------
+# Imprint/merge
+# ----------------------------------------------------------------------
+delete vertex all
+imprint all
+merge all
+
+# We must stitch the surfaces into a single volume in order to split
+# the curves for the purpose of defining the discretization size along
+# various portions of the curves.
+stitch volume all
+
+# End of file
