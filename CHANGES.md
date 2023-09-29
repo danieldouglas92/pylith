@@ -6,6 +6,7 @@ See <https://github.com/geodynamics/pylith/commits/main> for the complete log of
 * Add output of change in fault tractions for prescribed slip.
 * State variables are now included in the default `data_fields` for simulation output.
 * By default use PETSc proper orthogonal decomposition (POD) methodology for initial guess of solutions to improve convergence.
+* Changed name of fault Lagrange multiplier field for solution component in Python from `lagrange_fault` to `lagrange_multiplier_fault` to match name of solution field in C++.
 * Add demonstration of `pylith_powerlaw_gendb` in Step 8 of `examples/reverse-2d`.
 * Switched from CppUnit to Catch2 as the C++ testing framework.
 * Update to PETSc 3.19.5
@@ -13,6 +14,7 @@ See <https://github.com/geodynamics/pylith/commits/main> for the complete log of
 * Bug fixes
   * Fix errors in KinSrcTimeHistory.py
   * Fix creation of PETSc label for edges when importing Gmsh files. This fixes creation of faults with buried edges for 3D meshes imported from Gmsh.
+  * Add containers for solution fields for poroelasticity with faults.
 
 ## Version 3.0.3
 
