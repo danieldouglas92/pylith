@@ -112,7 +112,6 @@ public:
         PylithReal drainedBulkModulus;
         PylithReal biotCoefficient;
         PylithReal biotModulus;
-        PylithReal waterContent;
         pylith::fekernels::Tensor permeability;
         pylith::fekernels::Tensor refStress;
         pylith::fekernels::Tensor refStrain;

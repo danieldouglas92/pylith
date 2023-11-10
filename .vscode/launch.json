@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${env:PYLITH_BUILDDIR}/tests/libtests/bc/.libs/libtest_bc",
-            "stopAtEntry": true,
+            "stopAtEntry": false,
             "cwd": "${env:PYLITH_BUILDDIR}/tests/libtests/bc/",
             "environment": [],
             "externalConsole": false,

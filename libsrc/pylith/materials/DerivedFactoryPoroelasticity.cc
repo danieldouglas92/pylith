@@ -86,7 +86,6 @@ pylith::materials::DerivedFactoryPoroelasticity::addWaterContent(void) {
     description.componentNames.resize(1);
     description.componentNames[0] = fieldName;
     description.scale = 1.0;
-    description.validator = pylith::topology::FieldQuery::validatorNonnegative;;
 
     _field->subfieldAdd(description, getSubfieldDiscretization(fieldName));
 
